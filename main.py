@@ -18,7 +18,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 class QuestionRequest(BaseModel):
-question: str
+    question: str
 
 @app.get("/")
 def root():
@@ -57,6 +57,11 @@ User question:
 response = client.responses.create(
     model="gpt-4.1-mini",
     input=prompt
+)
+
+return {"answer": response.output_text}
+```
+
 )
 
 return {"answer": response.output_text}
