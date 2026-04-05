@@ -7,39 +7,35 @@ from openai import OpenAI
 app = FastAPI()
 
 app.add_middleware(
-CORSMiddleware,
-allow_origins=["*"],
-allow_credentials=True,
-allow_methods=["*"],
-allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class QuestionRequest(BaseModel):
-question: str
+    question: str
 
 @app.get("/")
 def read_root():
-return {"message": "LawScout backend is running"}
+    return {"message": "LawScout backend is running"}
 
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
-question = request.question
+    question = request.question
 
-```
-prompt = f"""
-```
-
+    prompt = f"""
 You are LawScout, a UK legal information assistant.
 
 Rules:
-
-* Provide general legal information only.
-* Do not provide legal advice.
-* Do not tell the user what they should do.
-* Use plain English.
-* Always include a disclaimer.
+- Provide general legal information only.
+- Do not provide legal advice.
+- Do not tell the user what they should do.
+- Use plain English.
+- Always include a disclaimer.
 
 Format the answer with these headings:
 
@@ -52,15 +48,13 @@ Format the answer with these headings:
 User question: {question}
 """
 
-```
-response = client.chat.completions.create(
-    model="gpt-4.1-mini",
-    messages=[
-        {"role": "user", "content": prompt}
-    ]
-)
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
 
-answer = response.choices[0].message.content
+    answer = response.choices[0].message.content
 
-return {"answer": answer}
-```
+    return {"answer": answer}
