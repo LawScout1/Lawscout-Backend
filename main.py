@@ -45,9 +45,14 @@ Rules:
 User question: {question}
 """
 
-    response = client.responses.create(
+    response = client.chat.completions.create(
         model="gpt-4.1-mini",
-        input=prompt
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
     )
 
-    return {"answer": response.output_text}
+    answer = response.choices[0].message.content
+
+    return {"answer": answer}
+    return {"answer": answer}
