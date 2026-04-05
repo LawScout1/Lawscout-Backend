@@ -14,7 +14,8 @@ allow_methods=["*"],
 allow_headers=["*"],
 )
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
 class QuestionRequest(BaseModel):
 question: str
@@ -25,7 +26,13 @@ return {"message": "LawScout backend is running"}
 
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
+if not api_key:
+return {"answer": "Server error: OPENAI_API_KEY is missing."}
+
+```
 prompt = f"""
+```
+
 You are LawScout, a UK legal information assistant.
 
 Rules:
@@ -54,3 +61,4 @@ response = client.responses.create(
 
 return {"answer": response.output_text}
 ```
+
