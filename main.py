@@ -61,4 +61,3 @@ response = client.responses.create(
 
 return {"answer": response.output_text}
 ```
-
