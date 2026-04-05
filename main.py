@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import os
+from openai import OpenAI
 
 app = FastAPI()
 
@@ -12,6 +14,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 class QuestionRequest(BaseModel):
     question: str
 
@@ -21,6 +25,29 @@ def read_root():
 
 @app.post("/ask")
 def ask_question(request: QuestionRequest):
-    return {
-        "answer": f"Test response from LawScout backend. Your question was: {request.question}"
-    }
+    question = request.question
+
+    prompt = f"""
+You are LawScout, a UK legal information assistant.
+
+Rules:
+- Provide general legal information only
+- Do not provide legal advice
+- Do not tell the user what they should do
+- Use plain English
+- Keep the answer structured under these headings:
+  1. General Legal Information
+  2. Relevant Case Law
+  3. Relevant Legislation
+  4. Limits and Uncertainty
+  5. Disclaimer
+
+User question: {question}
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
+    )
+
+    return {"answer": response.output_text}
